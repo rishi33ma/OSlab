@@ -1,0 +1,11 @@
+#!/bin/bash
+
+echo "enter princile amount: "
+read p
+echo "enter princile rate: "
+read r
+echo "enter time: "
+read t
+si=$((p*t*r/100))
+echo "the simple interst : $si"
+

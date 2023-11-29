@@ -1,0 +1,81 @@
+class Process:
+    def __init__(self, process_id, arrival_time, burst_time):
+        self.process_id = process_id
+        self.arrival_time = arrival_time
+        self.burst_time = burst_time
+        self.remaining_time = burst_time
+
+
+def calculate_times(processes, time_quantum):
+    n = len(processes)
+    finish_time = [0] * n
+    turnaround_time = [0] * n
+    waiting_time = [0] * n
+
+    current_time = 0
+    queue = []
+
+    while True:
+        for process in processes:
+            if process.arrival_time <= current_time and process.remaining_time > 0:
+                if process not in queue:
+                    queue.append(process)
+
+        if not queue:
+            break
+
+        current_process = queue.pop(0)
+        if current_process.remaining_time <= time_quantum:
+            finish_time[current_process.process_id - 1] = current_time + current_process.remaining_time
+            current_time += current_process.remaining_time
+            current_process.remaining_time = 0
+        else:
+            finish_time[current_process.process_id - 1] = current_time + time_quantum
+            current_time += time_quantum
+            current_process.remaining_time -= time_quantum
+            queue.append(current_process)
+
+    for i in range(n):
+        # Calculate turnaround time
+        turnaround_time[i] = finish_time[i] - processes[i].arrival_time
+
+        # Calculate waiting time
+        waiting_time[i] = turnaround_time[i] - processes[i].burst_time
+
+    return finish_time, turnaround_time, waiting_time
+
+
+def display_results(processes, finish_time, turnaround_time, waiting_time):
+    print("Process\tArrival Time\tBurst Time\tFinish Time\tTurnaround Time\tWaiting Time")
+
+    for i, process in enumerate(processes):
+        print(f"{process.process_id}\t{process.arrival_time}\t\t{process.burst_time}\t\t"
+              f"{finish_time[i]}\t\t{turnaround_time[i]}\t\t{waiting_time[i]}")
+
+
+def main():
+    # Number of processes
+    n = int(input("Enter the number of processes: "))
+
+    # List of processes
+    processes = []
+
+    # Input process details
+    print("Enter arrival time and burst time for each process:")
+    for i in range(n):
+        process_id = i + 1
+        arrival_time, burst_time = map(int, input(f"Process {process_id}: ").split())
+        processes.append(Process(process_id, arrival_time, burst_time))
+
+    # Time quantum for Round Robin
+    time_quantum = int(input("Enter the time quantum for Round Robin: "))
+
+    # Calculate times
+    finish_time, turnaround_time, waiting_time = calculate_times(processes, time_quantum)
+
+    # Display results
+    display_results(processes, finish_time, turnaround_time, waiting_time)
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,70 @@
+class BankerAlgorithm:
+    def __init__(self, num_processes, num_resources, max_claim_matrix, allocation_matrix, available_resources):
+        self.num_processes = num_processes
+        self.num_resources = num_resources
+        self.max_claim_matrix = max_claim_matrix
+        self.allocation_matrix = allocation_matrix
+        self.available_resources = available_resources
+        self.need_matrix = self.calculate_need_matrix()
+        self.safe_sequence = []  # Define safe_sequence as a class attribute
+
+    def calculate_need_matrix(self):
+        need_matrix = [[0] * self.num_resources for _ in range(self.num_processes)]
+        for i in range(self.num_processes):
+            for j in range(self.num_resources):
+                need_matrix[i][j] = self.max_claim_matrix[i][j] - self.allocation_matrix[i][j]
+        return need_matrix
+
+    def is_safe_state(self):
+        work = self.available_resources.copy()
+        finish = [False] * self.num_processes
+        self.safe_sequence = []  # Reset safe_sequence before each check
+
+        while True:
+            found = False
+            for i in range(self.num_processes):
+                if not finish[i] and all(need <= work for need, work in zip(self.need_matrix[i], work)):
+                    # If the process can finish, release allocated resources
+                    work = [work + allocation for work, allocation in zip(work, self.allocation_matrix[i])]
+                    finish[i] = True
+                    self.safe_sequence.append(i)
+                    found = True
+
+            if not found:
+                break
+
+        return all(finish)
+
+    def display_result(self):
+        if self.is_safe_state():
+            print("System is in a safe state.")
+            print("Safe Sequence:", [f"P{p}" for p in self.safe_sequence])
+        else:
+            print("System is in an unsafe state.")
+
+
+if __name__ == "__main__":
+    # Example input (you can modify this as needed)
+    num_processes = 5
+    num_resources = 3
+
+    max_claim_matrix = [
+        [7, 5, 3],
+        [3, 2, 2],
+        [9, 0, 2],
+        [2, 2, 2],
+        [4, 3, 3],
+    ]
+
+    allocation_matrix = [
+        [0, 1, 0],
+        [2, 0, 0],
+        [3, 0, 2],
+        [2, 1, 1],
+        [0, 0, 2],
+    ]
+
+    available_resources = [3, 3, 2]
+
+    banker = BankerAlgorithm(num_processes, num_resources, max_claim_matrix, allocation_matrix, available_resources)
+    banker.display_result()

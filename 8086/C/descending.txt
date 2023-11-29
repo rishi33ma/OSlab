@@ -1,0 +1,30 @@
+#!/bin/bash
+
+echo "Enter the number of elements in the array:"
+read n
+
+
+echo "Enter $n elements, separated by spaces:"
+for((i=0;i<n;i++)){
+	
+	read array[i]
+}
+
+
+# Sort the array in descending order
+for ((i=0; i<n-1; i++)); do
+    for ((j=i+1; j<n; j++)); do
+        if [ ${array[i]} -lt ${array[j]} ]; then
+            temp=${array[i]}
+            array[i]=${array[j]}
+            array[j]=$temp
+        fi
+    done
+done
+
+
+echo "Array in Descending Order:"
+for ((i=0; i<n; i++)); do
+    echo "${array[i]}"
+done
+

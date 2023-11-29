@@ -1,0 +1,37 @@
+def fifo_page_replacement(reference_string, frame_size):
+    page_frames = []  # Represents the page frames in memory
+    page_faults = 0  # Counter for page faults
+
+    for page in reference_string:
+        if page not in page_frames:
+            page_faults += 1
+            if len(page_frames) < frame_size:
+                page_frames.append(page)
+            else:
+                # Remove the oldest page (first-in) when the frame is full
+                page_frames.pop(0)
+                page_frames.append(page)
+
+    return page_faults
+
+
+if __name__ == "__main__":
+    # User input for the number of pages
+    num_pages = int(input("Enter the number of pages: "))
+
+    # User input for the length of the reference string
+    ref_string_length = int(input("Enter the length of the reference string: "))
+
+    # User input for the frame size
+    frame_size = int(input("Enter the frame size: "))
+
+    # User input for the reference string
+    print("Enter the reference string (space-separated numbers, each representing a page):")
+    reference_string = list(map(int, input().split()))
+
+    # Ensure that the reference string length matches the user's input
+    if len(reference_string) != ref_string_length:
+        print("Error: The length of the reference string does not match the specified length.")
+    else:
+        result = fifo_page_replacement(reference_string, frame_size)
+        print(f"Number of Page Faults using FIFO: {result}")
